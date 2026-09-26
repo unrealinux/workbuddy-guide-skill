@@ -1,0 +1,11 @@
+# 编辑器与系统
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# 临时文件与缓存
+*.tmp
+*.bak
+/tmp/
+node_modules/
