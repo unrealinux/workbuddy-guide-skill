@@ -56,6 +56,17 @@ async function withRetry(fn, label, tries = 5) {
   throw new Error(`${label} 连续 ${tries} 次失败: ${last.message}`);
 }
 
+/** 限并发地跑一批任务（逐文件比对正文时用，串行在 raw 被墙的场景下要跑好几分钟） */
+async function mapLimit(items, limit, fn) {
+  const out = new Array(items.length);
+  let next = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (next < items.length) { const i = next++; out[i] = await fn(items[i], i); }
+  });
+  await Promise.all(workers);
+  return out;
+}
+
 async function api(path) {
   return withRetry(async () => {
     const headers = { accept: 'application/vnd.github+json', 'user-agent': 'workbuddy-guide-skill' };
@@ -66,17 +77,27 @@ async function api(path) {
   }, `API ${path}`, 3);
 }
 
+/** 上次成功的镜像下标；raw 不通时（被墙/超时）不要让每篇正文都先撞它一次 */
+let rawPreferred = 0;
+const RAW_TIMEOUT_MS = 10_000;
+
 async function raw(path) {
   const enc = path.split('/').map(encodeURIComponent).join('/');
+  const order = RAW_HOSTS.map((_, i) => i).sort((a, b) => (a === rawPreferred ? -1 : b === rawPreferred ? 1 : a - b));
   let last;
-  for (const build of RAW_HOSTS) {
-    const url = build(enc);
+  for (const i of order) {
+    const url = RAW_HOSTS[i](enc);
     try {
-      return await withRetry(async () => {
-        const res = await fetch(url, { headers: { 'user-agent': 'workbuddy-guide-skill' } });
+      const text = await withRetry(async () => {
+        const res = await fetch(url, {
+          headers: { 'user-agent': 'workbuddy-guide-skill' },
+          signal: AbortSignal.timeout(RAW_TIMEOUT_MS),
+        });
         if (!res.ok) throw new Error(`raw ${path} -> ${res.status}`);
         return res.text();
       }, `raw ${path}`, 2);
+      rawPreferred = i;
+      return text;
     } catch (e) { last = e; }
   }
   throw new Error(`${last.message}（已尝试 ${RAW_HOSTS.length} 个镜像）`);
@@ -214,7 +235,7 @@ async function main() {
   const cache = existsSync(TREE_CACHE) ? JSON.parse(await readFile(TREE_CACHE, 'utf8')) : null;
 
   // 1) 文件清单：优先 GitHub API；限流/离线时退化为本地缓存（无法发现上游新增/删除文件）
-  let blobs = null, treeSha = null, apiOk = true, fromGit = false;
+  let blobs = null, treeSha = null, apiOk = true, fromGit = false, fromCache = false;
   try {
     const treeRes = await api(`/git/trees/${REF}?recursive=1`);
     blobs = treeRes.tree;
@@ -231,6 +252,7 @@ async function main() {
       if (cache) {
         blobs = cache.blobs;
         treeSha = cache.treeSha;
+        fromCache = true;
         console.warn(`⚠ GitHub API 与 git 都不可用（${e2.message}）—— 改用本地缓存的文件清单，无法发现上游新增/删除的章节。`);
       } else if (local) {
         blobs = local;
@@ -253,26 +275,59 @@ async function main() {
   const mediaPin = commitSha || prev.commit;
   if (mediaPin) MEDIA_BASE = `https://cdn.jsdelivr.net/gh/${REPO}@${mediaPin}/`;
 
-  // 2) --check：API 可用时比 tree sha；限流时改用上游正文内容哈希（不需要 API）
+  // 2) --check：先比 tree sha，再比 commit，最后退到逐文件内容哈希（不需要 API）
+  //    `.source.json` 里的 treeSha 可能是 null（上次同步走的是离线退路），此时必须继续往下比，
+  //    否则会误报「本地无同步记录」。
   if (CHECK_ONLY) {
-    if (apiOk && prev.treeSha && prev.treeSha === treeSha) { console.log(`已是最新: ${versionTag}`); return; }
-    if (apiOk && !prev.treeSha) {
-      console.log(`上游: ${versionTag}；本地无同步记录。\n重新同步: node scripts/sync.mjs`);
+    const s = (x) => (x ? String(x).slice(0, 8) : '?');
+    // 清单来自本地缓存时 treeSha 只反映「上次同步」，不能拿去和自身比较（会谎报已是最新）
+    if (!fromCache && treeSha && prev.treeSha && treeSha === prev.treeSha) {
+      console.log(`已是最新: ${versionTag}（tree ${s(treeSha)}）`);
       return;
     }
+    if (commitSha && prev.commit && commitSha === prev.commit) {
+      console.log(`已是最新: ${versionTag}（.source.json 未记录 tree sha，按 commit 判定）`);
+      return;
+    }
+    if (!prev.hashes || !Object.keys(prev.hashes).length) {
+      console.log(`上游: ${versionTag}；本地无内容哈希记录（commit ${s(prev.commit)}）。\n重新同步: node scripts/sync.mjs`);
+      return;
+    }
+
     const blobsSel = selectBlobs(blobs);
-    const changed = [];
-    for (const b of blobsSel) {
-      const want = prev.hashes && prev.hashes[b.path];
-      const got = shortHash(await raw(b.path));
-      if (!want || want !== got) changed.push(b.path);
+    const upstreamPaths = new Set(blobsSel.map((b) => b.path));
+    const added = [], changed = [], removed = [], failed = [];
+    const results = await mapLimit(blobsSel, 6, async (b) => {
+      const want = prev.hashes[b.path];
+      try { return { path: b.path, want, got: shortHash(await raw(b.path)) }; }
+      catch { return { path: b.path, want, failed: true }; }
+    });
+    for (const r of results) {
+      if (r.failed) failed.push(r.path);
+      else if (!r.want) added.push(r.path);
+      else if (r.want !== r.got) changed.push(r.path);
     }
-    if (!changed.length) console.log(`已是最新（已比对 ${blobsSel.length} 个文件的内容哈希）`);
-    else {
-      console.log(`上游有变化（API 限流，改用内容哈希判断）: ${changed.length} 个文件`);
-      changed.slice(0, 10).forEach((p) => console.log('  ~', p));
-      console.log('重新同步: node scripts/sync.mjs');
+    for (const p of Object.keys(prev.hashes)) if (!upstreamPaths.has(p)) removed.push(p);
+
+    const diff = [
+      ...added.map((p) => `  + ${p}`),
+      ...changed.map((p) => `  ~ ${p}`),
+      ...removed.map((p) => `  - ${p}`),
+    ];
+    if (!diff.length && !failed.length) {
+      const who = commitSha ? `上游有新提交 ${s(commitSha)}，但` : '未取到上游版本号（离线判断），';
+      console.log(`已是最新: ${who}收录的 ${blobsSel.length} 篇正文与本地记录一致（已比对内容哈希）`);
+      return;
     }
+    if (!diff.length) {
+      console.log(`无法判断: ${failed.length}/${blobsSel.length} 篇上游正文读取失败（${failed[0]} 等）。\n稍后重试: node scripts/sync.mjs --check`);
+      return;
+    }
+    console.log(`上游有变化: 新增 ${added.length}、修改 ${changed.length}、上游已删除 ${removed.length}`);
+    diff.slice(0, 10).forEach((l) => console.log(l));
+    if (diff.length > 10) console.log(`  …还有 ${diff.length - 10} 个`);
+    if (failed.length) console.log(`  （另有 ${failed.length} 篇读取失败，结果不完整）`);
+    console.log('重新同步: node scripts/sync.mjs');
     return;
   }
 
@@ -343,15 +398,15 @@ async function main() {
 
   await writeFile(join(OUT_DIR, '..', 'INDEX.md'), buildIndex(plan, commit), 'utf8');
   if (apiOk) {
-    await writeFile(TREE_CACHE, JSON.stringify({ treeSha, savedAt: new Date().toISOString(), blobs: sel.map((b) => ({ path: b.path, size: b.size })) }, null, 2) + '\n', 'utf8');
+    await writeFile(TREE_CACHE, JSON.stringify({ treeSha, savedAt: new Date().toISOString(), blobs: sel.map((b) => ({ type: 'blob', path: b.path, size: b.size })) }, null, 2) + '\n', 'utf8');
   }
   await writeFile(STATE, JSON.stringify({ repo: REPO, branch: REF, commit: knownCommit, treeSha: knownTree, syncedAt: new Date().toISOString(), files: plan.length, hashes }, null, 2) + '\n', 'utf8');
   console.log(`\n完成: 写入 ${written}, 未变 ${skipped}, 共 ${plan.length} 篇 -> references/chapters/`);
 }
 
-/** 只收录正文（上游的 plans/、README 等不进 references） */
+/** 只收录正文（上游的 plans/、README 等不进 references）；缓存里的条目没有 type，一并当 blob 看 */
 function selectBlobs(blobs) {
-  return blobs.filter((x) => x.type === 'blob' && x.path.endsWith('.md') &&
+  return blobs.filter((x) => (x.type === 'blob' || !x.type) && x.path && x.path.endsWith('.md') &&
     (x.path.startsWith('docs/bluebook/') || x.path.startsWith('docs/cases/') ||
      x.path === 'docs/reading-guide.md' || x.path.startsWith('docs/community/')));
 }
