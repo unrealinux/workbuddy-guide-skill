@@ -428,7 +428,9 @@ function buildIndex(plan, commit) {
     const flags = [];
     if (p.dupOf) flags.push('上游目录名重复');
     if (p.numMismatch) flags.push(`上游目录写作第 ${p.chapter} 章`);
-    return [`第 ${num} 章`, title, flags.length ? `（${flags.join('；')}）` : ''].filter(Boolean).join(' ');
+    // 附录/指南/案例没有章节号，别输出「第 undefined 章」
+    const head = Number.isFinite(num) ? `第 ${num} 章` : null;
+    return [head, title, flags.length ? `（${flags.join('；')}）` : ''].filter(Boolean).join(' ');
   };
   const rows = (pred) => plan.filter(pred)
     .slice()

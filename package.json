@@ -19,13 +19,18 @@
   },
   "files": [
     "skills/",
+    "scripts/",
     "README.md",
+    "README.en.md",
+    "CHANGELOG.md",
     "NOTICE.md",
     "LICENSE"
   ],
   "scripts": {
+    "check": "node scripts/check-version.mjs",
     "sync": "node skills/workbuddy-guide/scripts/sync.mjs",
-    "sync:check": "node skills/workbuddy-guide/scripts/sync.mjs --check"
+    "sync:check": "node skills/workbuddy-guide/scripts/sync.mjs --check",
+    "prepack": "node scripts/check-version.mjs"
   },
   "engines": {
     "node": ">=20"

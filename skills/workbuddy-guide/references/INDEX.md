@@ -66,24 +66,24 @@
 
 | 内容 | 文件 | 体积 |
 | --- | --- | --- |
-| 第 undefined 章 附录 A 常用指令模板 | `chapters/appendix-a.md` | 1 KB |
-| 第 undefined 章 附录 B 场景速查表 | `chapters/appendix-b.md` | 5 KB |
-| 第 undefined 章 附录 | `chapters/appendix-index.md` | 0 KB |
-| 第 undefined 章 Case 投稿指南 | `chapters/guide-case-contributing.md` | 4 KB |
-| 第 undefined 章 社区共创指南 | `chapters/guide-contributing.md` | 3 KB |
-| 第 undefined 章 如何阅读这本蓝皮书 | `chapters/guide-reading.md` | 3 KB |
-| 第 undefined 章 蓝皮书总目录 | `chapters/index-bluebook.md` | 2 KB |
-| 第 undefined 章 社区案例集 | `chapters/index-cases.md` | 5 KB |
+| 附录 A 常用指令模板 | `chapters/appendix-a.md` | 1 KB |
+| 附录 B 场景速查表 | `chapters/appendix-b.md` | 5 KB |
+| 附录 | `chapters/appendix-index.md` | 0 KB |
+| Case 投稿指南 | `chapters/guide-case-contributing.md` | 4 KB |
+| 社区共创指南 | `chapters/guide-contributing.md` | 3 KB |
+| 如何阅读这本蓝皮书 | `chapters/guide-reading.md` | 3 KB |
+| 蓝皮书总目录 | `chapters/index-bluebook.md` | 2 KB |
+| 社区案例集 | `chapters/index-cases.md` | 5 KB |
 
 ## 社区案例（`docs/cases/submissions/`）
 
 | 案例 | 文件 | 体积 |
 | --- | --- | --- |
-| 第 undefined 章 annual-report-digital-transformation | `chapters/case-annual-report-digital-transformation.md` | 19 KB |
-| 第 undefined 章 city-guide-dongguan | `chapters/case-city-guide-dongguan.md` | 8 KB |
-| 第 undefined 章 daily-ai-news | `chapters/case-daily-ai-news.md` | 8 KB |
-| 第 undefined 章 jz-2025-showreel | `chapters/case-jz-2025-showreel.md` | 12 KB |
-| 第 undefined 章 tea-shop-sales-analysis | `chapters/case-tea-shop-sales-analysis.md` | 11 KB |
-| 第 undefined 章 vibe-resume | `chapters/case-vibe-resume.md` | 4 KB |
-| 第 undefined 章 wechat-format-publish | `chapters/case-wechat-format-publish.md` | 9 KB |
-| 第 undefined 章 wechat-ima-knowledge | `chapters/case-wechat-ima-knowledge.md` | 11 KB |
+| annual-report-digital-transformation | `chapters/case-annual-report-digital-transformation.md` | 19 KB |
+| city-guide-dongguan | `chapters/case-city-guide-dongguan.md` | 8 KB |
+| daily-ai-news | `chapters/case-daily-ai-news.md` | 8 KB |
+| jz-2025-showreel | `chapters/case-jz-2025-showreel.md` | 12 KB |
+| tea-shop-sales-analysis | `chapters/case-tea-shop-sales-analysis.md` | 11 KB |
+| vibe-resume | `chapters/case-vibe-resume.md` | 4 KB |
+| wechat-format-publish | `chapters/case-wechat-format-publish.md` | 9 KB |
+| wechat-ima-knowledge | `chapters/case-wechat-ima-knowledge.md` | 11 KB |

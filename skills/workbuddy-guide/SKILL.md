@@ -1,15 +1,14 @@
 ---
 name: workbuddy-guide
-description: "Use when the user asks how to do something in WorkBuddy (腾讯 WorkBuddy / WorkBuddy 工作助手) or wants the 蓝皮书 answer, not a generic guess — triggers include: WorkBuddy 怎么用, WorkBuddy 教程/安装/下载/登录, 加载 Skill, 专家团, 连接器, 小程序/微信/飞书/钉钉 助理, 接入外部 API, 自动化任务, 多 Agent 系统设计, 工作流可靠性, 岗位/行业路线图, 场景速查, 蓝皮书章节, 社区案例. Also load when the user wants to build or refactor an open-source product guide site (VitePress + SEO + 案例投稿 + 流量自建管道) with this repo as the reference implementation. Ships the full 28-chapter text as local references, so no network read is needed to answer."
-whenToUse: "Load when the question is about WorkBuddy the product, about applying an AI work-assistant workflow (Office 三件套/会议/资讯/知识库/投资/视频/自媒体/GEO), or about reproducing this guide-site playbook. Do not load for generic LLM/agent questions unrelated to WorkBuddy or to this repository."
+description: "Use when the question is about WorkBuddy (腾讯 WorkBuddy / WorkBuddy 工作助手) — how to use it, or what 《WorkBuddy 实战蓝皮书》 says — or when you need an AI work-assistant workflow for Office docs, meetings, news digests, knowledge bases, investing, video, self-media growth or GEO. Chinese triggers: WorkBuddy 怎么用, 教程/安装/下载/登录, 加载 Skill, 专家团, 连接器, 小程序/微信/飞书/钉钉助理, 接入外部 API, 自动化任务, 多 Agent 系统设计, 工作流可靠性, 岗位/行业路线图, 场景速查, 蓝皮书章节, 社区案例. English triggers: WorkBuddy how-to/tutorial/install/login, load a Skill, expert teams, connector/MCP, WeChat/Feishu/DingTalk assistant, external API integration, scheduled automation, multi-agent design, workflow reliability, role & industry roadmaps, community cases. Also load to build or refactor an open-source product guide site (VitePress + SEO + case submissions + organic traffic) with this repo as the reference implementation. Do NOT load for generic LLM/agent questions unrelated to WorkBuddy/this repo. Ships the full 28-chapter text locally, so no network read is needed."
 license: MIT
 metadata:
   version: "1.0.0"
-  license: MIT
-  upstream: "AlephAITech/WorkBuddyGuide (MIT)"
+  upstream: "AlephAITech/WorkBuddyGuide"
+  upstreamLicense: "MIT (Copyright (c) 2026 WorkBuddy Guide Contributors)"
   upstreamCommit: "e510a2c8"
   syncedAt: "2026-09-26"
-  requires: "无需依赖即可回答；仅 scripts/sync.mjs 需要 Node.js 20+"
+  requires: "正文无依赖；仅 skills/workbuddy-guide/scripts/sync.mjs 需要 Node.js 20+"
 ---
 
 # WorkBuddy 蓝皮书 — 本地知识库
