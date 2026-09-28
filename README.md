@@ -79,7 +79,7 @@ workbuddy-guide-skill/
 
 ## 许可与归属
 
-- 上游内容：MIT，版权归 AlephAITech 及各位作者（见上游 `LICENSE`、README 作者名单）。
+- 上游内容：MIT。上游 `LICENSE` 声明的版权人为 `Copyright (c) 2026 WorkBuddy Guide Contributors`，本仓库原样保留该声明。
 - 本 Skill 的脚本、SKILL.md、`references/playbook-guide-site.md`：MIT。
 - 本 Skill 与 AlephAITech 无隶属关系，非官方；产品功能、价格、权限等时效信息以官方渠道为准。
 - 完整归属声明见 `NOTICE.md`。

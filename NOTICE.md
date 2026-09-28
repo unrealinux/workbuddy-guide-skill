@@ -22,5 +22,5 @@
 
 ## 版权
 
-- 上游正文与图片：© AlephAITech/WorkBuddyGuide 贡献者，MIT
+- 上游正文与图片：MIT，上游 `LICENSE` 声明的版权人为 `Copyright (c) 2026 WorkBuddy Guide Contributors`，本仓库原样保留
 - 本仓库的 Skill 层（`skills/workbuddy-guide/SKILL.md`、`skills/workbuddy-guide/scripts/sync.mjs`、本文件）：© 2026 xieyingfei，MIT
