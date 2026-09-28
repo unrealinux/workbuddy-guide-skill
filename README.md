@@ -2,26 +2,72 @@
 
 把 [AlephAITech/WorkBuddyGuide](https://github.com/AlephAITech/WorkBuddyGuide)（《WorkBuddy 实战蓝皮书》，MIT，3.2k star）**完整本地化**的 Agent Skill。
 
-- 28 章正文 + 附录 + 8 个社区案例 → `references/chapters/`（49 个文件，约 500 KB）
+- 28 章正文 + 附录 + 8 个社区案例 → `skills/workbuddy-guide/references/chapters/`（49 个文件，约 500 KB）
 - `SKILL.md` 只做**路由**（意图 → 读哪个文件），正文按需加载
-- `scripts/sync.mjs` 增量同步上游，幂等、带重试
+- `sync.mjs` 增量同步上游，幂等、带重试
 
 ## 安装
 
-把整个 `workbuddy-guide/` 目录放到 `~/.agents/skills/`（或项目的 `.agents/skills/`）即可被识别。正文已随 Skill 同步好，**不需要上游仓库、也不需要联网**就能回答。
+三种方式，选一个即可。三种方式都会把正文一起装上，**不需要上游仓库、也不需要联网**就能回答。
 
-## 更新正文
+**1. pi 包（推荐）**
 
 ```bash
-node scripts/sync.mjs --check   # 上游有变化吗（限流时自动改用内容哈希）
-node scripts/sync.mjs           # 增量同步，只写变化的文件
-node scripts/sync.mjs --force   # 强制重写全部 49 篇
-GITHUB_TOKEN=xxx node scripts/sync.mjs   # 带 token 解除 GitHub API 60 次/小时限流
+pi install git:github.com/unrealinux/workbuddy-guide-skill
+pi list          # 确认已装上
 ```
+
+**2. npm**
+
+```bash
+npm install -g workbuddy-guide-skill   # 或 pi install npm:workbuddy-guide-skill
+```
+
+**3. 直接放进 Agent Skills 目录**
+
+```bash
+git clone https://github.com/unrealinux/workbuddy-guide-skill \
+  ~/.agents/skills/workbuddy-guide
+```
+
+项目内安装就把目标换成 `<你的仓库>/.agents/skills/workbuddy-guide`。
+
+## 更新
+
+```bash
+pi update --extensions          # pi 包方式
+git -C ~/.agents/skills/workbuddy-guide pull   # clone 方式
+```
+
+## 更新正文（蓝皮书上游有新提交时）
+
+在本仓库内：
+
+```bash
+npm run sync:check              # 上游有变化吗（限流时自动改用内容哈希）
+npm run sync                    # 增量同步，只写变化的文件
+npm run sync -- --force         # 强制重写全部 49 篇
+GITHUB_TOKEN=xxx npm run sync   # 带 token 解除 GitHub API 60 次/小时限流
+```
+
+等价于直接调用 `node skills/workbuddy-guide/scripts/sync.mjs [--check|--force|--dry]`。
 
 同步时自动完成：图片/视频链接 → jsDelivr（钉到同步的 commit）；跨章节链接 → 本地文件名；站内 `/xxx` → workbuddy.homes。
 取文件清单的降级顺序：GitHub API → git 浅克隆 → `.tree.json` 缓存 → 从已有文件表头重建。
-`references/chapters/` 是生成物，**不要手改**——会被下次同步覆盖，要改就改 `scripts/sync.mjs`。
+`references/chapters/` 是生成物，**不要手改**——会被下次同步覆盖，要改就改 `sync.mjs`。
+
+## 仓库结构
+
+```text
+workbuddy-guide-skill/
+├─ package.json
+├─ LICENSE / NOTICE.md
+└─ skills/
+   └─ workbuddy-guide/
+      ├─ SKILL.md                 # 路由表：意图 → 读哪个文件
+      ├─ references/              # 49 篇正文 + 索引 + 同步缓存
+      └─ scripts/sync.mjs         # 增量同步上游
+```
 
 ## 为什么不是"把 49 个 md 丢进一个 prompt"
 
@@ -36,6 +82,7 @@ GITHUB_TOKEN=xxx node scripts/sync.mjs   # 带 token 解除 GitHub API 60 次/�
 - 上游内容：MIT，版权归 AlephAITech 及各位作者（见上游 `LICENSE`、README 作者名单）。
 - 本 Skill 的脚本、SKILL.md、`references/playbook-guide-site.md`：MIT。
 - 本 Skill 与 AlephAITech 无隶属关系，非官方；产品功能、价格、权限等时效信息以官方渠道为准。
+- 完整归属声明见 `NOTICE.md`。
 
 ## 已知限制
 

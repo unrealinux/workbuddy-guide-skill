@@ -1,6 +1,10 @@
 MIT License
 
-Copyright (c) 2026 xieyingfei
+Copyright (c) 2026 xieyingfei — Skill 层（SKILL.md、scripts/、README.md、NOTICE.md）
+Copyright (c) AlephAITech/WorkBuddyGuide contributors — 同步自上游的 `skills/workbuddy-guide/references/` 正文与书稿内容
+
+本仓库同时分发来自 https://github.com/AlephAITech/WorkBuddyGuide （MIT）的第三方内容，
+上游版权声明按 MIT 要求保留在上方，详见 NOTICE.md。
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

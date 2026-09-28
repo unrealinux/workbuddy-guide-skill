@@ -1,0 +1,41 @@
+{
+  "name": "workbuddy-guide-skill",
+  "version": "1.0.0",
+  "description": "把《WorkBuddy 实战蓝皮书》（28 章 + 附录 + 8 个社区案例，MIT）打包成本地 Agent Skill：SKILL.md 只做意图路由，正文按需加载，附增量同步脚本。",
+  "license": "MIT",
+  "keywords": [
+    "pi-package",
+    "pi",
+    "agent-skill",
+    "skill",
+    "workbuddy",
+    "腾讯-workbuddy",
+    "ai-agent"
+  ],
+  "pi": {
+    "skills": [
+      "./skills"
+    ]
+  },
+  "files": [
+    "skills/",
+    "README.md",
+    "NOTICE.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "sync": "node skills/workbuddy-guide/scripts/sync.mjs",
+    "sync:check": "node skills/workbuddy-guide/scripts/sync.mjs --check"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unrealinux/workbuddy-guide-skill.git"
+  },
+  "bugs": {
+    "url": "https://github.com/unrealinux/workbuddy-guide-skill/issues"
+  },
+  "homepage": "https://github.com/unrealinux/workbuddy-guide-skill#readme"
+}
