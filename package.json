@@ -28,6 +28,8 @@
   ],
   "scripts": {
     "check": "node scripts/check-version.mjs",
+    "zip": "node scripts/build-zip.mjs",
+    "release": "npm run check && npm run zip",
     "sync": "node skills/workbuddy-guide/scripts/sync.mjs",
     "sync:check": "node skills/workbuddy-guide/scripts/sync.mjs --check",
     "prepack": "node scripts/check-version.mjs"

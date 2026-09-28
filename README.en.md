@@ -8,7 +8,7 @@ An Agent Skill that carries the **complete text** of [AlephAITech/WorkBuddyGuide
 
 ## Install
 
-Pick one. All three ship the chapter text, so answering needs **no upstream repo and no network**.
+Pick one. All four ship the chapter text, so answering needs **no upstream repo and no network**.
 
 **1. pi package (recommended)**
 
@@ -32,11 +32,28 @@ git clone https://github.com/unrealinux/workbuddy-guide-skill \
 
 For a project-scoped install, use `<your-repo>/.agents/skills/workbuddy-guide` instead.
 
+**4. zip (no CLI needed, easy to forward to someone)**
+
+Grab `workbuddy-guide-skill-<version>.zip` from [Releases](https://github.com/unrealinux/workbuddy-guide-skill/releases/latest) and extract it into the skills directory:
+
+```bash
+unzip workbuddy-guide-skill-1.0.0.zip -d ~/.agents/skills/
+```
+
+Windows PowerShell:
+
+```powershell
+Expand-Archive .\workbuddy-guide-skill-1.0.0.zip -DestinationPath "$env:USERPROFILE\.agents\skills"
+```
+
+The result must be `~/.agents/skills/workbuddy-guide/SKILL.md` — one level too deep or too shallow and it will not load. The zip bundles `LICENSE`, `NOTICE.md` and `INSTALL.md`, so whoever receives it needs nothing else.
+
 ## Update
 
 ```bash
 pi update --extensions                          # pi package
 git -C ~/.agents/skills/workbuddy-guide pull    # clone
+# zip: re-download and overwrite (version lives in SKILL.md metadata.version)
 ```
 
 ## What an answer looks like

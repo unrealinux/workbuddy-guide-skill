@@ -22,7 +22,7 @@
 
 ## 安装
 
-三种方式，选一个即可。三种方式都会把正文一起装上，**不需要上游仓库、也不需要联网**就能回答。
+四种方式，选一个即可。四种方式都会把正文一起装上，**不需要上游仓库、也不需要联网**就能回答。
 
 **1. pi 包（推荐）**
 
@@ -46,11 +46,28 @@ git clone https://github.com/unrealinux/workbuddy-guide-skill \
 
 项目内安装就把目标换成 `<你的仓库>/.agents/skills/workbuddy-guide`。
 
+**4. zip（不用命令行工具，可以直接转发）**
+
+到 [Releases](https://github.com/unrealinux/workbuddy-guide-skill/releases/latest) 下载 `workbuddy-guide-skill-<版本>.zip`，解压到 Agent Skills 目录：
+
+```bash
+unzip workbuddy-guide-skill-1.0.0.zip -d ~/.agents/skills/
+```
+
+Windows PowerShell：
+
+```powershell
+Expand-Archive .\workbuddy-guide-skill-1.0.0.zip -DestinationPath "$env:USERPROFILE\.agents\skills"
+```
+
+解压后结构必须是 `~/.agents/skills/workbuddy-guide/SKILL.md`（多一层或少了都加载不到）。zip 里自带 `LICENSE`、`NOTICE.md`、`INSTALL.md`，收到 zip 的人不需要仓库也能装。
+
 ## 更新
 
 ```bash
 pi update --extensions          # pi 包方式
 git -C ~/.agents/skills/workbuddy-guide pull   # clone 方式
+# zip 方式：重新下载覆盖解压（版本看 SKILL.md 的 metadata.version）
 ```
 
 ## 更新正文（蓝皮书上游有新提交时）
@@ -75,7 +92,8 @@ GITHUB_TOKEN=xxx npm run sync   # 带 token 解除 GitHub API 60 次/小时限�
 ```text
 workbuddy-guide-skill/
 ├─ package.json
-├─ LICENSE / NOTICE.md
+├─ LICENSE / NOTICE.md / CHANGELOG.md
+├─ scripts/                      # 发布工具：build-zip.mjs、check-version.mjs
 └─ skills/
    └─ workbuddy-guide/
       ├─ SKILL.md                 # 路由表：意图 → 读哪个文件

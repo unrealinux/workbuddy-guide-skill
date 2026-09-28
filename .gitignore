@@ -13,3 +13,4 @@ node_modules/
 # pi 本地安装 / 打包产物
 .pi/
 *.tgz
+dist/

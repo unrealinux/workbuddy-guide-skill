@@ -18,6 +18,8 @@
 - `skills/workbuddy-guide/scripts/sync.mjs`：增量同步上游，幂等；取清单降级顺序 GitHub API → git 浅克隆 → `.tree.json` → 本地重建
 - `package.json`：pi 包清单（`pi.skills`）、`pi-package` 关键词、`npm run sync` / `sync:check` / `check`
 - `scripts/check-version.mjs`：校验版本一致、frontmatter 必填字段、description ≤ 1024 字符
+- `scripts/build-zip.mjs` + `npm run zip` / `npm run release`：零依赖、可复现（固定时间戳 + 排序条目）的 zip，解压后为 `workbuddy-guide/`，内含 `LICENSE` / `NOTICE.md` / `INSTALL.md`，可直接转发
+- GitHub Release 附件：`workbuddy-guide-skill-1.0.0.zip`（约 229 KB，59 个条目）
 - `README.en.md`、`CHANGELOG.md`
 
 ### Changed
