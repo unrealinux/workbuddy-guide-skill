@@ -1,6 +1,6 @@
 {
   "name": "workbuddy-guide-skill",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "把《WorkBuddy 实战蓝皮书》（28 章 + 附录 + 8 个社区案例，MIT）打包成本地 Agent Skill：SKILL.md 只做意图路由，正文按需加载，附增量同步脚本。",
   "license": "MIT",
   "keywords": [

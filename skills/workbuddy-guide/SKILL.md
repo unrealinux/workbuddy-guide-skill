@@ -3,7 +3,7 @@ name: workbuddy-guide
 description: "Use when the question is about WorkBuddy (腾讯 WorkBuddy / WorkBuddy 工作助手) — how to use it, or what 《WorkBuddy 实战蓝皮书》 says — or when you need an AI work-assistant workflow for Office docs, meetings, news digests, knowledge bases, investing, video, self-media growth or GEO. Chinese triggers: WorkBuddy 怎么用, 教程/安装/下载/登录, 加载 Skill, 专家团, 连接器, 小程序/微信/飞书/钉钉助理, 接入外部 API, 自动化任务, 多 Agent 系统设计, 工作流可靠性, 岗位/行业路线图, 场景速查, 蓝皮书章节, 社区案例. English triggers: WorkBuddy how-to/tutorial/install/login, load a Skill, expert teams, connector/MCP, WeChat/Feishu/DingTalk assistant, external API integration, scheduled automation, multi-agent design, workflow reliability, role & industry roadmaps, community cases. Also load to build or refactor an open-source product guide site (VitePress + SEO + case submissions + organic traffic) with this repo as the reference implementation. Do NOT load for generic LLM/agent questions unrelated to WorkBuddy/this repo. Ships the full 28-chapter text locally, so no network read is needed."
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "1.0.1"
   upstream: "AlephAITech/WorkBuddyGuide"
   upstreamLicense: "MIT (Copyright (c) 2026 WorkBuddy Guide Contributors)"
   upstreamCommit: "e510a2c8"

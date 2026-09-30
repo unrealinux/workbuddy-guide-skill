@@ -9,55 +9,37 @@ import { crc32, deflateRawSync } from "node:zlib";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SKILL_DIR = join(ROOT, "skills", "workbuddy-guide");
+const PACKAGING_DIR = join(ROOT, "packaging");
 const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
 
 const VERSION = pkg.version;
-const ZIP_NAME = `${pkg.name}-${VERSION}.zip`;
-const OUT = join(ROOT, "dist", ZIP_NAME);
+const OUT = join(ROOT, "dist", `${pkg.name}-${VERSION}.zip`);
 const PREFIX = "workbuddy-guide"; // 解压后的目录名（= skill name）
 
 // 可复现：所有条目用同一个时间戳（SOURCE_DATE_EPOCH 可覆盖）
-const epoch = Number(process.env.SOURCE_DATE_EPOCH || 0) || Math.floor(new Date("2026-09-29T00:00:00Z").getTime() / 1000);
+const epoch =
+  Number(process.env.SOURCE_DATE_EPOCH || 0) ||
+  Math.floor(new Date("2026-09-29T00:00:00Z").getTime() / 1000);
+const GENERATED_AT = new Date(epoch * 1000).toISOString().slice(0, 10);
 const dosTime = (() => {
   const d = new Date(epoch * 1000);
-  const time = (d.getUTCHours() << 11) | (d.getUTCMinutes() << 5) | (d.getUTCSeconds() >> 1);
-  const date = ((d.getUTCFullYear() - 1980) << 9) | ((d.getUTCMonth() + 1) << 5) | d.getUTCDate();
-  return { time, date };
+  return {
+    time: (d.getUTCHours() << 11) | (d.getUTCMinutes() << 5) | (d.getUTCSeconds() >> 1),
+    date: ((d.getUTCFullYear() - 1980) << 9) | ((d.getUTCMonth() + 1) << 5) | d.getUTCDate(),
+  };
 })();
 
-const INSTALL = `# 安装（zip 版）
+/** 包内说明书：正文在 packaging/，只注入版本号与构建日期 */
+const readTemplate = (file) =>
+  readFileSync(join(PACKAGING_DIR, file), "utf8")
+    .replaceAll("{{VERSION}}", VERSION)
+    .replaceAll("{{DATE}}", GENERATED_AT);
 
-1. 解压到 Agent Skills 目录：
-
-   macOS / Linux
-   \`\`\`bash
-   unzip ${ZIP_NAME} -d ~/.agents/skills/
-   \`\`\`
-
-   Windows PowerShell
-   \`\`\`powershell
-   Expand-Archive .\\${ZIP_NAME} -DestinationPath "$env:USERPROFILE\\.agents\\skills"
-   \`\`\`
-
-2. 确认目录结构是 \`~/.agents/skills/workbuddy-guide/SKILL.md\`（多一层或少了都会加载不到）。
-
-3. 想装进某个项目，就把目标换成 \`<项目>/.agents/skills/\`。
-
-更新：重新下载 zip 覆盖解压即可。版本看 \`SKILL.md\` 的 \`metadata.version\`。
-同步上游正文需要 Node.js 20+，仓库见 https://github.com/unrealinux/workbuddy-guide-skill
-`;
-
-/** 打包进去的文件：Skill 本体 + 许可与归属 + 变更记录 */
-function collect() {
-  const files = new Map();
-  for (const abs of walk(SKILL_DIR)) {
-    files.set(`${PREFIX}/${relative(SKILL_DIR, abs).split(sep).join("/")}`, abs);
-  }
-  for (const name of ["LICENSE", "NOTICE.md", "CHANGELOG.md"]) {
-    files.set(`${PREFIX}/${name}`, join(ROOT, name));
-  }
-  files.set(`${PREFIX}/INSTALL.md`, null); // 生成内容
-  return [...files.entries()].sort(([a], [b]) => (a < b ? -1 : 1));
+/** 生成内容的正文（其余条目直接从磁盘读） */
+function dataFor(name) {
+  if (name === `${PREFIX}/README.md`) return readTemplate("README.md");
+  if (name === `${PREFIX}/README.en.md`) return readTemplate("README.en.md");
+  throw new Error(`未知生成条目: ${name}`);
 }
 
 function walk(dir, out = []) {
@@ -70,13 +52,30 @@ function walk(dir, out = []) {
   return out;
 }
 
+/** 打包进去的内容：Skill 本体 + 许可与归属 + 变更记录 + 包内说明书 */
+function collect() {
+  const files = new Map();
+  for (const abs of walk(SKILL_DIR)) {
+    files.set(`${PREFIX}/${relative(SKILL_DIR, abs).split(sep).join("/")}`, abs);
+  }
+  for (const name of ["LICENSE", "NOTICE.md", "CHANGELOG.md"]) {
+    files.set(`${PREFIX}/${name}`, join(ROOT, name));
+  }
+  for (const name of ["README.md", "README.en.md"]) {
+    files.set(`${PREFIX}/${name}`, null); // 由 packaging/ 注入版本号生成
+  }
+  return [...files.entries()].sort(([a], [b]) => (a < b ? -1 : 1));
+}
+
+const bytesOf = (abs, name) => (abs ? statSync(abs).size : Buffer.byteLength(dataFor(name), "utf8"));
+
 function makeZip(entries) {
   const local = [];
   const central = [];
   let offset = 0;
 
   for (const [name, abs] of entries) {
-    const data = abs === null ? Buffer.from(INSTALL, "utf8") : readFileSync(abs);
+    const data = abs === null ? Buffer.from(dataFor(name), "utf8") : readFileSync(abs);
     const nameBuf = Buffer.from(name, "utf8");
     const crc = crc32(data) >>> 0;
     const deflated = deflateRawSync(data, { level: 9 });
@@ -141,6 +140,7 @@ mkdirSync(dirname(OUT), { recursive: true });
 writeFileSync(OUT, zip);
 
 const kb = (n) => `${(n / 1024).toFixed(1)} KB`;
+const total = entries.reduce((sum, [name, abs]) => sum + bytesOf(abs, name), 0);
 console.log(`打包完成: ${relative(ROOT, OUT).split(sep).join("/")}`);
-console.log(`条目 ${entries.length} 个 · zip ${kb(zip.length)} · 解压后 ${kb(entries.reduce((sum, [name, abs]) => sum + (abs ? statSync(abs).size : Buffer.byteLength(INSTALL)), 0))}`);
-console.log(`解压后目录名: ${PREFIX}/`);
+console.log(`条目 ${entries.length} 个 · zip ${kb(zip.length)} · 解压后 ${kb(total)}`);
+console.log(`解压后目录名: ${PREFIX}/ · 包内说明书版本: v${VERSION} (${GENERATED_AT})`);

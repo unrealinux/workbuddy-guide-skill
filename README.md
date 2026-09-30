@@ -51,16 +51,16 @@ git clone https://github.com/unrealinux/workbuddy-guide-skill \
 到 [Releases](https://github.com/unrealinux/workbuddy-guide-skill/releases/latest) 下载 `workbuddy-guide-skill-<版本>.zip`，解压到 Agent Skills 目录：
 
 ```bash
-unzip workbuddy-guide-skill-1.0.0.zip -d ~/.agents/skills/
+unzip workbuddy-guide-skill-*.zip -d ~/.agents/skills/
 ```
 
 Windows PowerShell：
 
 ```powershell
-Expand-Archive .\workbuddy-guide-skill-1.0.0.zip -DestinationPath "$env:USERPROFILE\.agents\skills"
+Expand-Archive .\workbuddy-guide-skill-*.zip -DestinationPath "$env:USERPROFILE\.agents\skills"
 ```
 
-解压后结构必须是 `~/.agents/skills/workbuddy-guide/SKILL.md`（多一层或少了都加载不到）。zip 里自带 `LICENSE`、`NOTICE.md`、`INSTALL.md`，收到 zip 的人不需要仓库也能装。
+解压后结构必须是 `~/.agents/skills/workbuddy-guide/SKILL.md`（多一层或少了都加载不到）。包内自带中英文说明书 `README.md` / `README.en.md`，以及 `LICENSE`、`NOTICE.md`、`CHANGELOG.md`，收到 zip 的人不需要本仓库也能装能用。
 
 ## 更新
 

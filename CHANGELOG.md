@@ -7,6 +7,16 @@
 - `package.json` → `version`
 - `skills/workbuddy-guide/SKILL.md` → `metadata.version`
 
+## 1.0.1 — 2026-09-29
+
+### Added
+
+- `packaging/README.md` / `packaging/README.en.md`：随包发布的中文/英文说明书（安装位置表、加载自检、示例问法、更新/卸载、排障表、目录结构、许可），构建时自动注入版本号与日期
+
+### Changed
+
+- zip 内不再只有 695 字节的 `INSTALL.md`，改为自带完整中英文说明书：`README.md`、`README.en.md`
+
 ## 1.0.0 — 2026-09-29
 
 首个公开发布。

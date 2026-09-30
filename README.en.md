@@ -37,16 +37,16 @@ For a project-scoped install, use `<your-repo>/.agents/skills/workbuddy-guide` i
 Grab `workbuddy-guide-skill-<version>.zip` from [Releases](https://github.com/unrealinux/workbuddy-guide-skill/releases/latest) and extract it into the skills directory:
 
 ```bash
-unzip workbuddy-guide-skill-1.0.0.zip -d ~/.agents/skills/
+unzip workbuddy-guide-skill-*.zip -d ~/.agents/skills/
 ```
 
 Windows PowerShell:
 
 ```powershell
-Expand-Archive .\workbuddy-guide-skill-1.0.0.zip -DestinationPath "$env:USERPROFILE\.agents\skills"
+Expand-Archive .\workbuddy-guide-skill-*.zip -DestinationPath "$env:USERPROFILE\.agents\skills"
 ```
 
-The result must be `~/.agents/skills/workbuddy-guide/SKILL.md` — one level too deep or too shallow and it will not load. The zip bundles `LICENSE`, `NOTICE.md` and `INSTALL.md`, so whoever receives it needs nothing else.
+The result must be `~/.agents/skills/workbuddy-guide/SKILL.md` — one level too deep or too shallow and it will not load. The zip bundles its own `README.md` / `README.en.md` plus `LICENSE`, `NOTICE.md` and `CHANGELOG.md`, so whoever receives it needs nothing else.
 
 ## Update
 
