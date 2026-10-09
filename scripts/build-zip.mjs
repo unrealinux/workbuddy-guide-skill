@@ -1,7 +1,7 @@
 // 打出可分发的 Skill zip（零依赖、可复现）。
-// 用法: node scripts/build-zip.mjs
-// 产物: dist/workbuddy-guide-skill-<version>.zip
-// 解压后得到 workbuddy-guide/，直接放进 ~/.agents/skills/ 或 <repo>/.agents/skills/
+// 用法: node scripts/build-zip.mjs            # 目录包裹包：解压得 workbuddy-guide/
+//       node scripts/build-zip.mjs --flat     # 平铺包：SKILL.md 在 zip 根，供平台上传（如 SkillPay）
+// 产物: dist/workbuddy-guide-skill-<version>[-skillpay].zip
 import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -13,8 +13,9 @@ const PACKAGING_DIR = join(ROOT, "packaging");
 const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
 
 const VERSION = pkg.version;
-const OUT = join(ROOT, "dist", `${pkg.name}-${VERSION}.zip`);
-const PREFIX = "workbuddy-guide"; // 解压后的目录名（= skill name）
+const FLAT = process.argv.includes("--flat"); // 平铺包：SKILL.md 在 zip 根；剔除维护者脚本与同步缓存
+const PREFIX = FLAT ? "" : "workbuddy-guide"; // 普通包解压后的目录名（= skill name）
+const OUT = join(ROOT, "dist", `${pkg.name}-${VERSION}${FLAT ? "-skillpay" : ""}.zip`);
 
 // 可复现：所有条目用同一个时间戳（SOURCE_DATE_EPOCH 可覆盖）
 const epoch =
@@ -56,13 +57,19 @@ function walk(dir, out = []) {
 function collect() {
   const files = new Map();
   for (const abs of walk(SKILL_DIR)) {
-    files.set(`${PREFIX}/${relative(SKILL_DIR, abs).split(sep).join("/")}`, abs);
+    const rel = relative(SKILL_DIR, abs).split(sep).join("/");
+    // 平铺包面向商品上传：不要维护者脚本，也不要同步缓存（.source.json / .tree.json）
+    if (FLAT && (rel.startsWith("scripts/") || rel.split("/").some((p) => p.startsWith(".")))) continue;
+    files.set(FLAT ? rel : `${PREFIX}/${rel}`, abs);
   }
-  for (const name of ["LICENSE", "NOTICE.md", "CHANGELOG.md"]) {
-    files.set(`${PREFIX}/${name}`, join(ROOT, name));
+  const rootFiles = FLAT ? ["LICENSE", "NOTICE.md"] : ["LICENSE", "NOTICE.md", "CHANGELOG.md"];
+  for (const name of rootFiles) {
+    files.set(FLAT ? name : `${PREFIX}/${name}`, join(ROOT, name));
   }
-  for (const name of ["README.md", "README.en.md"]) {
-    files.set(`${PREFIX}/${name}`, null); // 由 packaging/ 注入版本号生成
+  if (!FLAT) {
+    for (const name of ["README.md", "README.en.md"]) {
+      files.set(`${PREFIX}/${name}`, null); // 由 packaging/ 注入版本号生成
+    }
   }
   return [...files.entries()].sort(([a], [b]) => (a < b ? -1 : 1));
 }
@@ -135,6 +142,15 @@ function makeZip(entries) {
 }
 
 const entries = collect();
+
+// 平铺包硬校验：SKILL.md 必须在 zip 根，且不能出现外层目录（腾讯云 450019 / 通用平台规范）
+if (FLAT) {
+  const names = entries.map(([name]) => name);
+  if (!names.includes("SKILL.md")) throw new Error("平铺包缺少根目录 SKILL.md");
+  const wrapped = names.find((name) => name.startsWith("workbuddy-guide/"));
+  if (wrapped) throw new Error(`平铺包出现了外层目录: ${wrapped}`);
+}
+
 const zip = makeZip(entries);
 mkdirSync(dirname(OUT), { recursive: true });
 writeFileSync(OUT, zip);
@@ -143,4 +159,8 @@ const kb = (n) => `${(n / 1024).toFixed(1)} KB`;
 const total = entries.reduce((sum, [name, abs]) => sum + bytesOf(abs, name), 0);
 console.log(`打包完成: ${relative(ROOT, OUT).split(sep).join("/")}`);
 console.log(`条目 ${entries.length} 个 · zip ${kb(zip.length)} · 解压后 ${kb(total)}`);
-console.log(`解压后目录名: ${PREFIX}/ · 包内说明书版本: v${VERSION} (${GENERATED_AT})`);
+console.log(
+  FLAT
+    ? `模式: 平铺（平台上传）· SKILL.md 在根 · 无维护者脚本与同步缓存 · v${VERSION} (${GENERATED_AT})`
+    : `模式: 目录包裹（手动安装）· 解压后目录名: ${PREFIX}/ · 包内说明书版本: v${VERSION} (${GENERATED_AT})`,
+);

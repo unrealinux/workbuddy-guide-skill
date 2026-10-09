@@ -29,7 +29,8 @@
   "scripts": {
     "check": "node scripts/check-version.mjs",
     "zip": "node scripts/build-zip.mjs",
-    "release": "npm run check && npm run zip",
+    "zip:skillpay": "node scripts/build-zip.mjs --flat",
+    "release": "npm run check && npm run zip && npm run zip:skillpay",
     "sync": "node skills/workbuddy-guide/scripts/sync.mjs",
     "sync:check": "node skills/workbuddy-guide/scripts/sync.mjs --check",
     "prepack": "node scripts/check-version.mjs"
