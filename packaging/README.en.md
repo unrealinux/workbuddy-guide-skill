@@ -10,7 +10,7 @@ Note: the reference text is Chinese. Ask in any language; answers come back in C
 
 ## 1. Install
 
-Drop the whole `workbuddy-guide/` directory into a skills directory your agent reads:
+Drop the whole `workbuddy-playbook/` directory into a skills directory your agent reads:
 
 | Scope | Target |
 | --- | --- |
@@ -34,15 +34,15 @@ Alternatives that skip the zip:
 
 ```bash
 pi install git:github.com/unrealinux/workbuddy-guide-skill
-git clone https://github.com/unrealinux/workbuddy-guide-skill ~/.agents/skills/workbuddy-guide
+git clone https://github.com/unrealinux/workbuddy-guide-skill ~/.agents/skills/workbuddy-playbook
 ```
 
 ## 2. Verify it loaded
 
-1. `ls ~/.agents/skills/workbuddy-guide/SKILL.md` — one level too deep or too shallow will not load.
+1. `ls ~/.agents/skills/workbuddy-playbook/SKILL.md` — one level too deep or too shallow will not load.
 2. Ask a WorkBuddy question; the answer should read a file under `references/chapters/` and cite it.
-3. In pi you can force it with `/skill:workbuddy-guide <question>`.
-4. Nothing happens? Check the directory is named `workbuddy-guide`, that there is no duplicate copy, then restart the agent — skill lists are scanned at startup.
+3. In pi you can force it with `/skill:workbuddy-playbook <question>`.
+4. Nothing happens? Check the directory is named `workbuddy-playbook`, that there is no duplicate copy, then restart the agent — skill lists are scanned at startup.
 
 ## 3. Use
 
@@ -58,8 +58,8 @@ Habits to expect: one or two chapters per question; UI, pricing and permission d
 
 ## 4. Update and uninstall
 
-Re-download the zip and overwrite, or `git -C ~/.agents/skills/workbuddy-guide pull` for a clone install.
-The installed version is in `SKILL.md` under `metadata.version`; changes are listed in `CHANGELOG.md`.
+Re-download the zip and overwrite, or `git -C ~/.agents/skills/workbuddy-playbook pull` for a clone install.
+The installed version is in `SKILL.md` under `version`; changes are listed in `CHANGELOG.md`.
 
 To re-sync the chapter text from upstream you need Node.js 20+ and the repo's `scripts/sync.mjs` (`npm run sync:check`, `npm run sync`).
 
@@ -69,16 +69,16 @@ Uninstall: delete the directory. The skill writes nothing else.
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
-| Agent does not see the skill | Wrong nesting | Must be `~/.agents/skills/workbuddy-guide/SKILL.md`; if you extracted a double `workbuddy-guide/workbuddy-guide/`, delete the outer one |
+| Agent does not see the skill | Wrong nesting | Must be `~/.agents/skills/workbuddy-playbook/SKILL.md`; if you extracted a double `workbuddy-playbook/workbuddy-playbook/`, delete the outer one |
 | Duplicate-name warning | Installed twice | Keep one copy (for example both a git clone and an unzipped folder) |
-| Short answers, no citations | Routing not triggered | Include the word WorkBuddy, or load it explicitly with `/skill:workbuddy-guide` |
+| Short answers, no citations | Routing not triggered | Include the word WorkBuddy, or load it explicitly with `/skill:workbuddy-playbook` |
 | Images do not open | Image files are not bundled | They are jsDelivr links and need network; switch the host to `raw.githubusercontent.com` if jsDelivr is unreachable |
 | Chapter numbers look off | Upstream has two numbering schemes | `references/INDEX.md` is authoritative; the upstream table of contents is one behind from chapter 8 onward |
 
 ## 6. Layout, version, license
 
 ```text
-workbuddy-guide/
+workbuddy-playbook/
 ├─ SKILL.md              # routing table: question -> file
 ├─ README.md / README.en.md
 ├─ CHANGELOG.md

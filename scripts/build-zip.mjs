@@ -1,5 +1,5 @@
 // 打出可分发的 Skill zip（零依赖、可复现）。
-// 用法: node scripts/build-zip.mjs            # 目录包裹包：解压得 workbuddy-guide/
+// 用法: node scripts/build-zip.mjs            # 目录包裹包：解压得 workbuddy-playbook/
 //       node scripts/build-zip.mjs --flat     # 平铺包：SKILL.md 在 zip 根，供平台上传（如 SkillPay）
 // 产物: dist/workbuddy-guide-skill-<version>[-skillpay].zip
 import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
@@ -8,13 +8,13 @@ import { fileURLToPath } from "node:url";
 import { crc32, deflateRawSync } from "node:zlib";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const SKILL_DIR = join(ROOT, "skills", "workbuddy-guide");
+const SKILL_DIR = join(ROOT, "skills", "workbuddy-playbook");
 const PACKAGING_DIR = join(ROOT, "packaging");
 const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
 
 const VERSION = pkg.version;
 const FLAT = process.argv.includes("--flat"); // 平铺包：SKILL.md 在 zip 根；剔除维护者脚本与同步缓存
-const PREFIX = FLAT ? "" : "workbuddy-guide"; // 普通包解压后的目录名（= skill name）
+const PREFIX = FLAT ? "" : "workbuddy-playbook"; // 普通包解压后的目录名（= skill name）
 const OUT = join(ROOT, "dist", `${pkg.name}-${VERSION}${FLAT ? "-skillpay" : ""}.zip`);
 
 // 可复现：所有条目用同一个时间戳（SOURCE_DATE_EPOCH 可覆盖）
@@ -147,7 +147,7 @@ const entries = collect();
 if (FLAT) {
   const names = entries.map(([name]) => name);
   if (!names.includes("SKILL.md")) throw new Error("平铺包缺少根目录 SKILL.md");
-  const wrapped = names.find((name) => name.startsWith("workbuddy-guide/"));
+  const wrapped = names.find((name) => name.startsWith("workbuddy-playbook/"));
   if (wrapped) throw new Error(`平铺包出现了外层目录: ${wrapped}`);
 }
 

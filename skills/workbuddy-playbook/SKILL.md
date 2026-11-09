@@ -1,14 +1,18 @@
 ---
-name: workbuddy-guide
+name: workbuddy-playbook
+version: "1.0.2"
+display_name: "WorkBuddy使用秘笈"
+display_name_en: "WorkBuddy-Playbook-Guide"
+description_zh: "WorkBuddy（腾讯 WorkBuddy / 工作助手）使用指南：把《WorkBuddy 实战蓝皮书》28 章正文、附录与 8 个社区案例装到本地，提问即路由到对应章节，给出带章节号的可执行步骤。覆盖安装登录、加载 Skill、专家团、连接器/MCP、微信/飞书/钉钉助理、外部 API、自动化任务、多 Agent 设计、岗位与行业路线图。"
+description_en: "A local guide to WorkBuddy, Tencent's AI work assistant. Ships all 28 chapters, appendices and 8 community cases of the WorkBuddy Playbook, routes each question to the right chapter, and answers with chapter-numbered, executable steps. Covers install and login, loading Skills, expert teams, connectors/MCP, WeChat/Feishu/DingTalk assistants, external APIs, scheduled automation, multi-agent design, and role and industry roadmaps."
 description: "Use when the question is about WorkBuddy (腾讯 WorkBuddy / WorkBuddy 工作助手) — how to use it, or what 《WorkBuddy 实战蓝皮书》 says — or when you need an AI work-assistant workflow for Office docs, meetings, news digests, knowledge bases, investing, video, self-media growth or GEO. Chinese triggers: WorkBuddy 怎么用, 教程/安装/下载/登录, 加载 Skill, 专家团, 连接器, 小程序/微信/飞书/钉钉助理, 接入外部 API, 自动化任务, 多 Agent 系统设计, 工作流可靠性, 岗位/行业路线图, 场景速查, 蓝皮书章节, 社区案例. English triggers: WorkBuddy how-to/tutorial/install/login, load a Skill, expert teams, connector/MCP, WeChat/Feishu/DingTalk assistant, external API integration, scheduled automation, multi-agent design, workflow reliability, role & industry roadmaps, community cases. Also load to build or refactor an open-source product guide site (VitePress + SEO + case submissions + organic traffic) with this repo as the reference implementation. Do NOT load for generic LLM/agent questions unrelated to WorkBuddy/this repo. Ships the full 28-chapter text locally, so no network read is needed."
 license: MIT
 metadata:
-  version: "1.0.1"
   upstream: "AlephAITech/WorkBuddyGuide"
   upstreamLicense: "MIT (Copyright (c) 2026 WorkBuddy Guide Contributors)"
   upstreamCommit: "e510a2c8"
   syncedAt: "2026-09-26"
-  requires: "正文无依赖；仅 skills/workbuddy-guide/scripts/sync.mjs 需要 Node.js 20+"
+  requires: "正文无依赖；仅 skills/workbuddy-playbook/scripts/sync.mjs 需要 Node.js 20+"
 ---
 
 # WorkBuddy 蓝皮书 — 本地知识库
@@ -94,7 +98,7 @@ metadata:
 ## 3. 仓库地图
 
 ```text
-workbuddy-guide/
+workbuddy-playbook/
 ├─ SKILL.md                      # 本文件：原则 + 路由表
 ├─ references/
 │  ├─ INDEX.md                   # 49 篇章节索引（章节号 → 文件）

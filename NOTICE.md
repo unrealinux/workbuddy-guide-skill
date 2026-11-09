@@ -9,9 +9,9 @@
 
 ## 本仓库做了什么
 
-- 把上游 28 章正文 + 附录 + 8 个社区案例（49 个文件）同步到 `skills/workbuddy-guide/references/chapters/`
-- 新增 `skills/workbuddy-guide/SKILL.md`：只做**意图路由**（问什么 → 读哪个文件），正文按需加载
-- 新增 `skills/workbuddy-guide/scripts/sync.mjs`：把上游 Markdown 增量同步到本地，幂等、带重试；同步时自动改写图片/视频链接为 jsDelivr 并钉到该 commit，跨章节链接改写为本地文件名
+- 把上游 28 章正文 + 附录 + 8 个社区案例（49 个文件）同步到 `skills/workbuddy-playbook/references/chapters/`
+- 新增 `skills/workbuddy-playbook/SKILL.md`：只做**意图路由**（问什么 → 读哪个文件），正文按需加载
+- 新增 `skills/workbuddy-playbook/scripts/sync.mjs`：把上游 Markdown 增量同步到本地，幂等、带重试；同步时自动改写图片/视频链接为 jsDelivr 并钉到该 commit，跨章节链接改写为本地文件名
 - 上游 MIT 许可与版权声明予以保留，见 `LICENSE`
 
 ## 边界声明
@@ -23,4 +23,4 @@
 ## 版权
 
 - 上游正文与图片：MIT，上游 `LICENSE` 声明的版权人为 `Copyright (c) 2026 WorkBuddy Guide Contributors`，本仓库原样保留
-- 本仓库的 Skill 层（`skills/workbuddy-guide/SKILL.md`、`skills/workbuddy-guide/scripts/sync.mjs`、本文件）：© 2026 xieyingfei，MIT
+- 本仓库的 Skill 层（`skills/workbuddy-playbook/SKILL.md`、`skills/workbuddy-playbook/scripts/sync.mjs`、本文件）：© 2026 xieyingfei，MIT

@@ -1,8 +1,8 @@
-# workbuddy-guide
+# workbuddy-playbook
 
 把 [AlephAITech/WorkBuddyGuide](https://github.com/AlephAITech/WorkBuddyGuide)（《WorkBuddy 实战蓝皮书》，MIT，3.2k star）**完整本地化**的 Agent Skill。
 
-- 28 章正文 + 附录 + 8 个社区案例 → `skills/workbuddy-guide/references/chapters/`（49 个文件，约 500 KB）
+- 28 章正文 + 附录 + 8 个社区案例 → `skills/workbuddy-playbook/references/chapters/`（49 个文件，约 500 KB）
 - `SKILL.md` 只做**路由**（意图 → 读哪个文件），正文按需加载
 - `sync.mjs` 增量同步上游，幂等、带重试
 
@@ -41,10 +41,10 @@ npm install -g workbuddy-guide-skill   # 或 pi install npm:workbuddy-guide-skil
 
 ```bash
 git clone https://github.com/unrealinux/workbuddy-guide-skill \
-  ~/.agents/skills/workbuddy-guide
+  ~/.agents/skills/workbuddy-playbook
 ```
 
-项目内安装就把目标换成 `<你的仓库>/.agents/skills/workbuddy-guide`。
+项目内安装就把目标换成 `<你的仓库>/.agents/skills/workbuddy-playbook`。
 
 **4. zip（不用命令行工具，可以直接转发）**
 
@@ -60,14 +60,14 @@ Windows PowerShell：
 Expand-Archive .\workbuddy-guide-skill-*.zip -DestinationPath "$env:USERPROFILE\.agents\skills"
 ```
 
-解压后结构必须是 `~/.agents/skills/workbuddy-guide/SKILL.md`（多一层或少了都加载不到）。包内自带中英文说明书 `README.md` / `README.en.md`，以及 `LICENSE`、`NOTICE.md`、`CHANGELOG.md`，收到 zip 的人不需要本仓库也能装能用。
+解压后结构必须是 `~/.agents/skills/workbuddy-playbook/SKILL.md`（多一层或少了都加载不到）。包内自带中英文说明书 `README.md` / `README.en.md`，以及 `LICENSE`、`NOTICE.md`、`CHANGELOG.md`，收到 zip 的人不需要本仓库也能装能用。
 
 ## 更新
 
 ```bash
 pi update --extensions          # pi 包方式
-git -C ~/.agents/skills/workbuddy-guide pull   # clone 方式
-# zip 方式：重新下载覆盖解压（版本看 SKILL.md 的 metadata.version）
+git -C ~/.agents/skills/workbuddy-playbook pull   # clone 方式
+# zip 方式：重新下载覆盖解压（版本看 SKILL.md 的 version）
 ```
 
 ## 更新正文（蓝皮书上游有新提交时）
@@ -81,7 +81,7 @@ npm run sync -- --force         # 强制重写全部 49 篇
 GITHUB_TOKEN=xxx npm run sync   # 带 token 解除 GitHub API 60 次/小时限流
 ```
 
-等价于直接调用 `node skills/workbuddy-guide/scripts/sync.mjs [--check|--force|--dry]`。
+等价于直接调用 `node skills/workbuddy-playbook/scripts/sync.mjs [--check|--force|--dry]`。
 
 同步时自动完成：图片/视频链接 → jsDelivr（钉到同步的 commit）；跨章节链接 → 本地文件名；站内 `/xxx` → workbuddy.homes。
 取文件清单的降级顺序：GitHub API → git 浅克隆 → `.tree.json` 缓存 → 从已有文件表头重建。
@@ -95,7 +95,7 @@ workbuddy-guide-skill/
 ├─ LICENSE / NOTICE.md / CHANGELOG.md
 ├─ scripts/                      # 发布工具：build-zip.mjs、check-version.mjs
 └─ skills/
-   └─ workbuddy-guide/
+   └─ workbuddy-playbook/
       ├─ SKILL.md                 # 路由表：意图 → 读哪个文件
       ├─ references/              # 49 篇正文 + 索引 + 同步缓存
       └─ scripts/sync.mjs         # 增量同步上游

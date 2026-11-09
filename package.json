@@ -1,6 +1,6 @@
 {
   "name": "workbuddy-guide-skill",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "把《WorkBuddy 实战蓝皮书》（28 章 + 附录 + 8 个社区案例，MIT）打包成本地 Agent Skill：SKILL.md 只做意图路由，正文按需加载，附增量同步脚本。",
   "license": "MIT",
   "keywords": [
@@ -31,8 +31,8 @@
     "zip": "node scripts/build-zip.mjs",
     "zip:skillpay": "node scripts/build-zip.mjs --flat",
     "release": "npm run check && npm run zip && npm run zip:skillpay",
-    "sync": "node skills/workbuddy-guide/scripts/sync.mjs",
-    "sync:check": "node skills/workbuddy-guide/scripts/sync.mjs --check",
+    "sync": "node skills/workbuddy-playbook/scripts/sync.mjs",
+    "sync:check": "node skills/workbuddy-playbook/scripts/sync.mjs --check",
     "prepack": "node scripts/check-version.mjs"
   },
   "engines": {

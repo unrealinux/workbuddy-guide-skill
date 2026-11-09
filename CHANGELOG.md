@@ -5,7 +5,19 @@
 版本号在两处必须一致，`npm run check` 会校验：
 
 - `package.json` → `version`
-- `skills/workbuddy-guide/SKILL.md` → `metadata.version`
+- `skills/workbuddy-guide/SKILL.md` → `version`
+
+## 1.0.2 — 2026-09-29
+
+### Added
+
+- `SKILL.md` frontmatter：`version`、`display_name`、`display_name_en`、`description_zh`、`description_en`，满足 WorkBuddy / SkillPay 平台上传的解析要求
+
+### Changed
+
+- 版本号从 `metadata.version` 移到顶层 `version`（平台只读顶层）；`scripts/check-version.mjs` 同步校验这 5 个平台字段
+- 技能名 `workbuddy-guide` → `workbuddy-playbook`，避开 WorkBuddy 平台已占用的名称（目录同步改为 `skills/workbuddy-playbook/`，解压目录、`/skill:` 调用名一并更新）
+- `display_name` 改为「WorkBuddy使用秘笈」，两个展示名去掉空格（平台只允许中英文、数字、`-`、`—`）；`check-version.mjs` 增加字符集校验
 
 ## 1.0.1 — 2026-09-29
 

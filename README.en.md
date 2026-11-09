@@ -1,8 +1,8 @@
-# workbuddy-guide
+# workbuddy-playbook
 
 An Agent Skill that carries the **complete text** of [AlephAITech/WorkBuddyGuide](https://github.com/AlephAITech/WorkBuddyGuide) — *The WorkBuddy Bluebook* (MIT, 3.2k stars, Chinese) — as local references.
 
-- 28 chapters + appendices + 8 community case studies → `skills/workbuddy-guide/references/chapters/` (49 files, ~500 KB)
+- 28 chapters + appendices + 8 community case studies → `skills/workbuddy-playbook/references/chapters/` (49 files, ~500 KB)
 - `SKILL.md` is **routing only** (question → which file to read); chapter text loads on demand
 - `sync.mjs` re-syncs from upstream incrementally, idempotent, with retries
 
@@ -27,10 +27,10 @@ npm install -g workbuddy-guide-skill   # or: pi install npm:workbuddy-guide-skil
 
 ```bash
 git clone https://github.com/unrealinux/workbuddy-guide-skill \
-  ~/.agents/skills/workbuddy-guide
+  ~/.agents/skills/workbuddy-playbook
 ```
 
-For a project-scoped install, use `<your-repo>/.agents/skills/workbuddy-guide` instead.
+For a project-scoped install, use `<your-repo>/.agents/skills/workbuddy-playbook` instead.
 
 **4. zip (no CLI needed, easy to forward to someone)**
 
@@ -46,14 +46,14 @@ Windows PowerShell:
 Expand-Archive .\workbuddy-guide-skill-*.zip -DestinationPath "$env:USERPROFILE\.agents\skills"
 ```
 
-The result must be `~/.agents/skills/workbuddy-guide/SKILL.md` — one level too deep or too shallow and it will not load. The zip bundles its own `README.md` / `README.en.md` plus `LICENSE`, `NOTICE.md` and `CHANGELOG.md`, so whoever receives it needs nothing else.
+The result must be `~/.agents/skills/workbuddy-playbook/SKILL.md` — one level too deep or too shallow and it will not load. The zip bundles its own `README.md` / `README.en.md` plus `LICENSE`, `NOTICE.md` and `CHANGELOG.md`, so whoever receives it needs nothing else.
 
 ## Update
 
 ```bash
 pi update --extensions                          # pi package
-git -C ~/.agents/skills/workbuddy-guide pull    # clone
-# zip: re-download and overwrite (version lives in SKILL.md metadata.version)
+git -C ~/.agents/skills/workbuddy-playbook pull    # clone
+# zip: re-download and overwrite (version lives in SKILL.md version)
 ```
 
 ## What an answer looks like
@@ -77,7 +77,7 @@ workbuddy-guide-skill/
 ├─ package.json
 ├─ LICENSE / NOTICE.md
 └─ skills/
-   └─ workbuddy-guide/
+   └─ workbuddy-playbook/
       ├─ SKILL.md                 # routing table: question → file
       ├─ references/              # 49 chapters + index + sync caches
       └─ scripts/sync.mjs         # incremental upstream sync
