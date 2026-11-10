@@ -1,6 +1,6 @@
 ---
 name: workbuddy-playbook
-version: "1.0.2"
+version: "1.0.3"
 display_name: "WorkBuddy使用秘笈"
 display_name_en: "WorkBuddy-Playbook-Guide"
 description_zh: "WorkBuddy（腾讯 WorkBuddy / 工作助手）使用指南：把《WorkBuddy 实战蓝皮书》28 章正文、附录与 8 个社区案例装到本地，提问即路由到对应章节，给出带章节号的可执行步骤。覆盖安装登录、加载 Skill、专家团、连接器/MCP、微信/飞书/钉钉助理、外部 API、自动化任务、多 Agent 设计、岗位与行业路线图。"
@@ -12,7 +12,7 @@ metadata:
   upstreamLicense: "MIT (Copyright (c) 2026 WorkBuddy Guide Contributors)"
   upstreamCommit: "e510a2c8"
   syncedAt: "2026-09-26"
-  requires: "正文无依赖；仅 skills/workbuddy-playbook/scripts/sync.mjs 需要 Node.js 20+"
+  requires: "正文无依赖；仅 scripts/sync.mjs 需要 Node.js 20+"
 ---
 
 # WorkBuddy 蓝皮书 — 本地知识库

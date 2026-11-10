@@ -58,8 +58,8 @@ function collect() {
   const files = new Map();
   for (const abs of walk(SKILL_DIR)) {
     const rel = relative(SKILL_DIR, abs).split(sep).join("/");
-    // 平铺包面向商品上传：不要维护者脚本，也不要同步缓存（.source.json / .tree.json）
-    if (FLAT && (rel.startsWith("scripts/") || rel.split("/").some((p) => p.startsWith(".")))) continue;
+    // 平铺包面向商品上传：只剔除同步缓存 .tree.json（平台校验文档里引用的文件必须存在，故保留 scripts/ 与 .source.json）
+    if (FLAT && rel.endsWith(".tree.json")) continue;
     files.set(FLAT ? rel : `${PREFIX}/${rel}`, abs);
   }
   const rootFiles = FLAT ? ["LICENSE", "NOTICE.md"] : ["LICENSE", "NOTICE.md", "CHANGELOG.md"];
@@ -161,6 +161,6 @@ console.log(`打包完成: ${relative(ROOT, OUT).split(sep).join("/")}`);
 console.log(`条目 ${entries.length} 个 · zip ${kb(zip.length)} · 解压后 ${kb(total)}`);
 console.log(
   FLAT
-    ? `模式: 平铺（平台上传）· SKILL.md 在根 · 无维护者脚本与同步缓存 · v${VERSION} (${GENERATED_AT})`
+    ? `模式: 平铺（平台上传）· SKILL.md 在根 · 含 scripts/sync.mjs 与 .source.json · v${VERSION} (${GENERATED_AT})`
     : `模式: 目录包裹（手动安装）· 解压后目录名: ${PREFIX}/ · 包内说明书版本: v${VERSION} (${GENERATED_AT})`,
 );

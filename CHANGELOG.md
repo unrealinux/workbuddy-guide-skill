@@ -7,6 +7,14 @@
 - `package.json` → `version`
 - `skills/workbuddy-guide/SKILL.md` → `version`
 
+## 1.0.3 — 2026-09-29
+
+### Fixed
+
+- 平铺包补齐文档引用的资源：加入 `scripts/sync.mjs` 与 `references/.source.json`，只剔除 `.tree.json` 缓存（平台校验「文档引用的文件必须存在」）
+- `SKILL.md` / `NOTICE.md` 的文件路径改为技能目录相对路径，在仓库与两种 zip 布局下都能解析
+- 版本号递增到 1.0.3（平台要求新包版本严格大于已上传版本）
+
 ## 1.0.2 — 2026-09-29
 
 ### Added
