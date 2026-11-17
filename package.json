@@ -1,7 +1,7 @@
 {
   "name": "workbuddy-guide-skill",
-  "version": "1.0.3",
-  "description": "把《WorkBuddy 实战蓝皮书》（28 章 + 附录 + 8 个社区案例，MIT）打包成本地 Agent Skill：SKILL.md 只做意图路由，正文按需加载，附增量同步脚本。",
+  "version": "2.0.1",
+  "description": "把《WorkBuddy 实战蓝皮书》与《豆包工作蓝皮书》打包成本地 Agent Skill：SKILL.md 先判断产品再做意图路由，正文按需加载，附两个增量同步脚本。",
   "license": "MIT",
   "keywords": [
     "pi-package",
@@ -10,7 +10,11 @@
     "skill",
     "workbuddy",
     "腾讯-workbuddy",
-    "ai-agent"
+    "ai-agent",
+    "doubao",
+    "doubao-work",
+    "豆包",
+    "豆包工作"
   ],
   "pi": {
     "skills": [
@@ -30,10 +34,15 @@
     "check": "node scripts/check-version.mjs",
     "zip": "node scripts/build-zip.mjs",
     "zip:skillpay": "node scripts/build-zip.mjs --flat",
-    "release": "npm run check && npm run zip && npm run zip:skillpay",
-    "sync": "node skills/workbuddy-playbook/scripts/sync.mjs",
-    "sync:check": "node skills/workbuddy-playbook/scripts/sync.mjs --check",
-    "prepack": "node scripts/check-version.mjs"
+    "release": "npm run check && npm run zip && npm run zip:skillpay && npm run zip:volumes",
+    "sync": "node skills/ai-work-assistant-playbook/scripts/sync.mjs",
+    "sync:check": "node skills/ai-work-assistant-playbook/scripts/sync.mjs --check",
+    "sync:doubao": "node skills/ai-work-assistant-playbook/scripts/sync-doubao.mjs",
+    "sync:doubao:check": "node skills/ai-work-assistant-playbook/scripts/sync-doubao.mjs --check",
+    "prepack": "node scripts/check-version.mjs",
+    "zip:workbuddy": "node scripts/build-zip.mjs --only workbuddy",
+    "zip:doubao": "node scripts/build-zip.mjs --only doubao",
+    "zip:volumes": "npm run zip:workbuddy && npm run zip:workbuddy -- --flat && npm run zip:doubao && npm run zip:doubao -- --flat"
   },
   "engines": {
     "node": ">=20"

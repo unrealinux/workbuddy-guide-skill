@@ -7,6 +7,49 @@
 - `package.json` → `version`
 - `skills/workbuddy-guide/SKILL.md` → `version`
 
+## 2.0.1 — 2026-09-29
+
+### Changed
+
+- 目录压平到两级（平台限制「根目录/二级目录/文件」）：正文从 `references/<分册>/chapters/` 移到 `workbuddy/`、`doubao/`，与 `INDEX.md`、`.source.json` 同层
+- `scripts/sync.mjs` / `sync-doubao.mjs` 的 `REF_DIR` 与生成的 `INDEX.md` 链接同步去掉 `chapters/` 前缀
+- SKILL.md、README、packaging 说明书、NOTICE 的路径与目录树同步更新
+- 版本递增到 2.0.1
+
+### Added
+
+- 单册包：`npm run zip:workbuddy` / `zip:doubao`（`--only`），产物 `ai-work-assistant-tencent-*`、`ai-work-assistant-bytedance-*`；SKILL.md 由合集版裁剪生成，元数据在 `packaging/volumes.json`
+- `check-version.mjs` 校验单册包元数据（字段齐全、名称字符集、description ≤ 1024）
+
+## 2.0.0 — 2026-09-29
+
+### Added
+
+- 并入《豆包工作蓝皮书》（AlephAITech/DoubaoWorkGuide，MIT，50 篇）：`references/doubao/`，新增 `scripts/sync-doubao.mjs`，`npm run sync:doubao` / `sync:doubao:check`
+- `SKILL.md` 新增「先判断产品，再路由」：WorkBuddy 与豆包工作两套路由表 + 豆包通读路线
+
+### Changed
+
+- 目录改为分册结构：`references/workbuddy/`（原 `references/`）+ `references/doubao/`
+- `scripts/sync.mjs` 的 `REF_DIR` 指向 `references/workbuddy/`
+- 展示名改为「AI办公助手指南合集」/ `AI-Office-Assistant-Playbook`；`description*` 加入豆包关键词
+- README、packaging 说明书、NOTICE 覆盖两本蓝皮书与两个上游归属
+- 打包产物改名跟随技能名：`ai-work-assistant-playbook-<version>[-skillpay].zip`（npm 包名仍是 `workbuddy-guide-skill`）
+
+## 1.0.5 — 2026-09-29
+
+### Changed
+
+- 技能名 `workbuddy-playbook` → `ai-work-assistant-playbook`，`name` 字段也不再含 `workbuddy`（平台禁词）；目录、解压目录、`/skill:` 调用名、sync 脚本路径同步更新
+- 版本递增到 1.0.5
+
+## 1.0.4 — 2026-09-29
+
+### Changed
+
+- 市场展示名去掉 `WorkBuddy` / `buddy` 词汇（平台禁词）：`AI工作助手使用秘笈` / `AI-Work-Assistant-Playbook`
+- 版本递增到 1.0.4（平台要求新包版本严格大于已上传版本）
+
 ## 1.0.3 — 2026-09-29
 
 ### Fixed

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * sync.mjs — 把 AlephAITech/WorkBuddyGuide 的正文同步成本 Skill 的 references/。
+ * sync.mjs — 把 AlephAITech/WorkBuddyGuide 的正文同步成本 Skill 的 workbuddy 目录。
  *
  * 用法:
  *   node scripts/sync.mjs            # 同步（增量：只写有变化的文件）
@@ -33,7 +33,7 @@ const API = `https://api.github.com/repos/${REPO}`;
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SKILL_ROOT = resolve(HERE, '..');
-const REF_DIR = join(SKILL_ROOT, 'references');
+const REF_DIR = join(SKILL_ROOT, 'workbuddy');
 const OUT_DIR = join(REF_DIR, 'chapters');
 const STATE = join(REF_DIR, '.source.json');
 const TREE_CACHE = join(REF_DIR, '.tree.json');
@@ -401,10 +401,10 @@ async function main() {
     await writeFile(TREE_CACHE, JSON.stringify({ treeSha, savedAt: new Date().toISOString(), blobs: sel.map((b) => ({ type: 'blob', path: b.path, size: b.size })) }, null, 2) + '\n', 'utf8');
   }
   await writeFile(STATE, JSON.stringify({ repo: REPO, branch: REF, commit: knownCommit, treeSha: knownTree, syncedAt: new Date().toISOString(), files: plan.length, hashes }, null, 2) + '\n', 'utf8');
-  console.log(`\n完成: 写入 ${written}, 未变 ${skipped}, 共 ${plan.length} 篇 -> references/chapters/`);
+  console.log(`\n完成: 写入 ${written}, 未变 ${skipped}, 共 ${plan.length} 篇 -> workbuddy/`);
 }
 
-/** 只收录正文（上游的 plans/、README 等不进 references）；缓存里的条目没有 type，一并当 blob 看 */
+/** 只收录正文（上游的 plans/、README 等不进正文目录）；缓存里的条目没有 type，一并当 blob 看 */
 function selectBlobs(blobs) {
   return blobs.filter((x) => (x.type === 'blob' || !x.type) && x.path && x.path.endsWith('.md') &&
     (x.path.startsWith('docs/bluebook/') || x.path.startsWith('docs/cases/') ||
@@ -435,7 +435,7 @@ function buildIndex(plan, commit) {
   const rows = (pred) => plan.filter(pred)
     .slice()
     .sort((a, b) => (a.h1Chapter ?? a.chapter ?? 999) - (b.h1Chapter ?? b.chapter ?? 999))
-    .map((p) => `| ${label(p)} | \`chapters/${p.file}\` | ${Math.round((p.bytes || 0) / 1024)} KB |`).join('\n');
+    .map((p) => `| ${label(p)} | \`${p.file}\` | ${Math.round((p.bytes || 0) / 1024)} KB |`).join('\n');
 
   let md = `# 章节索引\n\n> 由 \`scripts/sync.mjs\` 生成 · 上游 \`${REPO}@${commit.slice(0, 8)}\` · 共 ${plan.length} 篇\n\n`;
   md += `先读这里的表，再决定读哪一章。不要一次读多章。\n\n`;
@@ -443,7 +443,7 @@ function buildIndex(plan, commit) {
   for (const [key, label] of parts) {
     md += `## ${label}\n\n| 章节 | 文件 | 体积 |\n| --- | --- | --- |\n${rows((p) => p.file.startsWith(key + '-ch')) || '| — | — | — |'}\n\n`;
     const extras = plan.filter((p) => (p.file === `${key}-index.md` || p.file === `${key}-extra.md`));
-    if (extras.length) md += `另: ${extras.map((p) => `${p.title} → \`chapters/${p.file}\``).join(' · ')}\n\n`;
+    if (extras.length) md += `另: ${extras.map((p) => `${p.title} → \`${p.file}\``).join(' · ')}\n\n`;
   }
   md += `## 附录与工具\n\n| 内容 | 文件 | 体积 |\n| --- | --- | --- |\n${rows((p) => ['appendix', 'guide', 'index'].includes(p.kind))}\n\n`;
   md += `## 社区案例（\`docs/cases/submissions/\`）\n\n| 案例 | 文件 | 体积 |\n| --- | --- | --- |\n${rows((p) => p.kind === 'case')}\n`;

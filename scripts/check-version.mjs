@@ -5,7 +5,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const SKILL_DIR = join(ROOT, "skills", "workbuddy-playbook");
+const SKILL_DIR = join(ROOT, "skills", "ai-work-assistant-playbook");
 const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
 const skill = readFileSync(join(SKILL_DIR, "SKILL.md"), "utf8");
 
@@ -35,7 +35,7 @@ else if (skillVersion !== pkg.version) {
 // 2. frontmatter 必填与长度（Agent Skills 规范：name/description 必填，description ≤ 1024 字符）
 const name = field("name");
 const description = field("description");
-if (name !== "workbuddy-playbook") fail.push(`SKILL.md name 应为 workbuddy-playbook，实际 ${name}`);
+if (name !== "ai-work-assistant-playbook") fail.push(`SKILL.md name 应为 ai-work-assistant-playbook，实际 ${name}`);
 else ok.push(`name 合规: ${name}`);
 if (!description) fail.push("SKILL.md description 缺失");
 else {
@@ -66,19 +66,36 @@ for (const key of topLevel) {
 }
 if (topLevel.every((k) => allowed.has(k))) ok.push(`frontmatter 字段合规: ${topLevel.join(", ")}`);
 
-// 5. npm 包必备
+// 5. 单册包元数据（packaging/volumes.json，构建用）
+try {
+  const vols = JSON.parse(readFileSync(join(ROOT, "packaging", "volumes.json"), "utf8"));
+  for (const [key, v] of Object.entries(vols)) {
+    for (const f of ["name", "display_name", "display_name_en", "description_zh", "description_en", "description", "artifact", "dir", "script", "routing", "example_line"]) {
+      if (!v[f]) fail.push(`volumes.json ${key} 缺少 ${f}`);
+    }
+    for (const f of ["name", "display_name", "display_name_en"]) {
+      if (v[f] && !nameCharset.test(v[f])) fail.push(`volumes.json ${key}.${f} 含平台不允许的字符（仅中英文、数字、- 、—）: ${v[f]}`);
+    }
+    if (v.description && [...v.description].length > 1024) fail.push(`volumes.json ${key}.description 过长: ${[...v.description].length}`);
+  }
+  ok.push(`单册包元数据合规: ${Object.keys(vols).join(", ")}`);
+} catch (e) {
+  fail.push(`packaging/volumes.json 读取失败: ${e.message}`);
+}
+
+// 6. npm 包必备
 for (const key of ["name", "version", "license", "description"]) {
   if (!pkg[key]) fail.push(`package.json 缺少 ${key}`);
 }
 if (pkg.keywords?.includes("pi-package")) ok.push("package.json 带 pi-package 关键词");
 else fail.push("package.json 缺少 pi-package 关键词（pi.dev 画廊不会收录）");
 
-// 6. skill 正文存在
+// 7. skill 正文存在
 try {
   readFileSync(join(SKILL_DIR, "SKILL.md"));
-  ok.push("skills/workbuddy-playbook/SKILL.md 存在");
+  ok.push("skills/ai-work-assistant-playbook/SKILL.md 存在");
 } catch {
-  fail.push("skills/workbuddy-playbook/SKILL.md 不存在");
+  fail.push("skills/ai-work-assistant-playbook/SKILL.md 不存在");
 }
 
 for (const line of ok) console.log(`ok    ${line}`);

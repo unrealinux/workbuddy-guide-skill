@@ -1,0 +1,42 @@
+{
+  "workbuddy": {
+    "artifact": "ai-work-assistant-tencent",
+    "name": "workbuddy-playbook",
+    "display_name": "AI办公助手进阶篇",
+    "display_name_en": "AI-Office-Assistant-Advanced",
+    "dir": "workbuddy",
+    "routing": "2. 分册一路由表：腾讯 WorkBuddy",
+    "script": "scripts/sync.mjs",
+    "other": "doubao",
+    "product": "腾讯 WorkBuddy",
+    "description_zh": "腾讯 WorkBuddy 使用指南：《WorkBuddy 实战蓝皮书》28 章正文、附录与 8 个社区案例装到本地，提问即路由到对应章节，给出带章节号的可执行步骤。覆盖安装登录、加载 Skill、专家团、连接器/MCP、微信/飞书/钉钉助理、外部 API、Office 三件套、会议、资讯、知识管理、投研、视频、自媒体、定时任务、多 Agent 设计、岗位与行业路线图。",
+    "description_en": "A local guide to Tencent WorkBuddy. Ships all 28 chapters, appendices and 8 community cases of the WorkBuddy Playbook, routes each question to the right chapter, and answers with chapter-numbered, executable steps. Covers install and login, loading Skills, expert teams, connectors/MCP, WeChat/Feishu/DingTalk assistants, external APIs, Office docs, meetings, news digests, knowledge management, investing, video, self-media, scheduled tasks, multi-agent design, and role and industry roadmaps.",
+    "description": "Use when the question is about Tencent WorkBuddy — how to use it, or what 《WorkBuddy 实战蓝皮书》 says. Covers install/login, loading Skills, expert teams, connectors/MCP, WeChat/Feishu/DingTalk assistants, Office docs, meetings, news digests, knowledge bases, investing, video, self-media growth, scheduled automation, multi-agent design, and role or industry roadmaps. Chinese triggers: WorkBuddy 怎么用, 教程/安装/下载/登录, 加载 Skill, 专家团, 连接器, 小程序/微信/飞书/钉钉助理, 接入外部 API, 自动化任务, 多 Agent 系统设计, 工作流可靠性, 岗位/行业路线图, 场景速查, 蓝皮书章节, 社区案例. English triggers: how-to, tutorial, install, login, load a Skill, expert teams, connector/MCP, WeChat/Feishu/DingTalk assistant, external API integration, scheduled automation, multi-agent design, community cases. Do NOT load for generic LLM/agent questions or for 豆包工作. Ships the full text locally, so no network read is needed.",
+    "upstream": "AlephAITech/WorkBuddyGuide",
+    "upstreamLicense": "MIT (Copyright (c) 2026 WorkBuddy Guide Contributors)",
+    "upstreamCommit": "e510a2c8",
+    "syncedAt": "2026-09-26",
+    "example": "workbuddy/part1-ch07.md",
+    "example_line": "3. **标注出处**：回答里给出章节号/标题与文件路径，例如\"见第 7 章 连接器（`workbuddy/part1-ch07.md`）\"。"
+  },
+  "doubao": {
+    "artifact": "ai-work-assistant-bytedance",
+    "name": "ai-work-assistant-bytedance",
+    "display_name": "AI办公助手字节篇",
+    "display_name_en": "AI-Office-Assistant-ByteDance",
+    "dir": "doubao",
+    "routing": "3. 分册二路由表：字节 豆包工作",
+    "script": "scripts/sync-doubao.mjs",
+    "other": "workbuddy",
+    "product": "字节 豆包工作（Doubao Work）",
+    "description_zh": "字节 豆包工作使用指南：《豆包工作蓝皮书》50 篇正文装到本地，提问即路由到对应篇目，给出可执行步骤。覆盖安装登录、界面与任务、连接器、Skill、工作小队、手机操控、API 与定时任务，以及个人提效、自媒体、知识管理、电商、金融研究 31 个实战场景。",
+    "description_en": "A local guide to ByteDance Doubao Work. Ships all 50 articles of the Doubao Work Playbook locally, routes each question to the right article, and answers with executable steps. Covers install and login, tasks and projects, connectors, Skills, work squads, phone control, APIs and scheduled tasks, plus 31 hands-on scenarios across personal productivity, self-media, knowledge management, e-commerce and equity research.",
+    "description": "Use when the question is about 豆包工作 (Doubao Work, ByteDance's AI work assistant) — how to use it, or how to run a real task with it. Covers install and login, tasks and projects, connectors, Skills, work squads, phone control, APIs and scheduled tasks, plus personal productivity, self-media, knowledge management, e-commerce and equity research scenarios. Chinese triggers: 豆包工作怎么用, 豆包下载/安装/登录, 豆包的连接器, 豆包 Skill, 工作小队, 定时任务, 个人提效, 自媒体, 知识管理, 电商, 金融研究, 蓝皮书. English triggers: Doubao Work how-to, tutorial, install, login, connectors, Skills, work squads, scheduled tasks, investing research. Do NOT load for generic LLM/agent questions or for WorkBuddy. Ships the full text locally, so no network read is needed.",
+    "upstream": "AlephAITech/DoubaoWorkGuide",
+    "upstreamLicense": "MIT (Copyright (c) 2026 DoubaoWork Guide Contributors)",
+    "upstreamCommit": "a7f87fe4",
+    "syncedAt": "2026-10-16",
+    "example": "doubao/part1-10.md",
+    "example_line": "3. **标注出处**：回答里给出篇名与文件路径，例如\"见 使用篇 连接器怎么用（`doubao/part1-05.md`）\"。"
+  }
+}

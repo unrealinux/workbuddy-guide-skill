@@ -1,21 +1,31 @@
 // 打出可分发的 Skill zip（零依赖、可复现）。
-// 用法: node scripts/build-zip.mjs            # 目录包裹包：解压得 workbuddy-playbook/
+// 用法: node scripts/build-zip.mjs            # 目录包裹包：解压得 ai-work-assistant-playbook/
 //       node scripts/build-zip.mjs --flat     # 平铺包：SKILL.md 在 zip 根，供平台上传（如 SkillPay）
-// 产物: dist/workbuddy-guide-skill-<version>[-skillpay].zip
+// 产物: dist/<skill name>-<version>[-skillpay].zip
 import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { crc32, deflateRawSync } from "node:zlib";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const SKILL_DIR = join(ROOT, "skills", "workbuddy-playbook");
+const SKILL_DIR = join(ROOT, "skills", "ai-work-assistant-playbook");
 const PACKAGING_DIR = join(ROOT, "packaging");
 const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
 
 const VERSION = pkg.version;
-const FLAT = process.argv.includes("--flat"); // 平铺包：SKILL.md 在 zip 根；剔除维护者脚本与同步缓存
-const PREFIX = FLAT ? "" : "workbuddy-playbook"; // 普通包解压后的目录名（= skill name）
-const OUT = join(ROOT, "dist", `${pkg.name}-${VERSION}${FLAT ? "-skillpay" : ""}.zip`);
+// --only <workbuddy|doubao>：只出单册包（SKILL.md 由合集版裁剪生成）
+const ONLY = (() => {
+  const i = process.argv.indexOf("--only");
+  return i > -1 ? process.argv[i + 1] : null;
+})();
+const VOLUMES = JSON.parse(readFileSync(join(PACKAGING_DIR, "volumes.json"), "utf8"));
+if (ONLY && !VOLUMES[ONLY]) throw new Error(`--only 只支持: ${Object.keys(VOLUMES).join(" / ")}`);
+const VOL = ONLY ? VOLUMES[ONLY] : null;
+const FLAT = process.argv.includes("--flat"); // 平铺包：SKILL.md 在 zip 根；剔除同步缓存
+// 产物名跟随技能名（合集）或分册名，与 npm 包名解耦
+const ARTIFACT = VOL ? VOL.artifact : readFileSync(join(SKILL_DIR, "SKILL.md"), "utf8").match(/^name:\s*(.+)$/m)[1].trim();
+const PREFIX = FLAT ? "" : ARTIFACT; // 普通包解压后的目录名（= skill name）
+const OUT = join(ROOT, "dist", `${ARTIFACT}-${VERSION}${FLAT ? "-skillpay" : ""}.zip`);
 
 // 可复现：所有条目用同一个时间戳（SOURCE_DATE_EPOCH 可覆盖）
 const epoch =
@@ -36,10 +46,59 @@ const readTemplate = (file) =>
     .replaceAll("{{VERSION}}", VERSION)
     .replaceAll("{{DATE}}", GENERATED_AT);
 
+/** 单册包的 SKILL.md：从合集版裁出「核心原则 + 该册路由 + 回答形状」，frontmatter 换成单册信息 */
+function volumeSkillMd(vol) {
+  const raw = readFileSync(join(SKILL_DIR, "SKILL.md"), "utf8");
+  const parts = raw.slice(raw.indexOf("\n---\n", 4) + 5).split(/^## /m).slice(1);
+  /** 取出某小节正文（去掉标题行） */
+  const sec = (prefix) => {
+    const hit = parts.find((p) => p.startsWith(prefix));
+    if (!hit) throw new Error(`SKILL.md 缺少小节「${prefix}」，单册包无法生成`);
+    return hit.split("\n").slice(1).join("\n").trim();
+  };
+  const core = sec("0. 核心原则")
+    .replace(/^1\. \*\*先判断产品，再路由\*\*.*$/m, `1. **本技能只收 ${vol.product} 的正文**：问到别的产品就直接说没有收录，不要凭记忆编。`)
+    .replace(/^3\. \*\*标注出处\*\*.*$/m, vol.example_line);
+  const md = `---
+name: ${vol.name}
+version: "${VERSION}"
+display_name: "${vol.display_name}"
+display_name_en: "${vol.display_name_en}"
+description_zh: "${vol.description_zh}"
+description_en: "${vol.description_en}"
+description: "${vol.description}"
+license: MIT
+metadata:
+  upstream: "${vol.upstream}"
+  upstreamLicense: "${vol.upstreamLicense}"
+  upstreamCommit: "${vol.upstreamCommit}"
+  syncedAt: "${vol.syncedAt}"
+  requires: "正文无依赖；仅 ${vol.script} 需要 Node.js 20+"
+---
+
+## 0. 核心原则（不可违背）
+
+${core}
+
+## 1. 路由表（意图 → 读哪个文件）
+
+${sec(vol.routing)}
+
+## 2. 回答形状
+
+${sec("5. 回答形状")}
+`;
+  // 单册包不能引用另一册的文件，否则平台会报「缺少必需资源」
+  if (md.includes(`\`${vol.other}/`)) throw new Error(`单册包混入了 ${vol.other}/ 的引用，检查 SKILL.md 的公共小节`);
+  return md;
+}
+
 /** 生成内容的正文（其余条目直接从磁盘读） */
 function dataFor(name) {
-  if (name === `${PREFIX}/README.md`) return readTemplate("README.md");
-  if (name === `${PREFIX}/README.en.md`) return readTemplate("README.en.md");
+  const key = (x) => (PREFIX ? `${PREFIX}/${x}` : x);
+  if (VOL && name === key("SKILL.md")) return volumeSkillMd(VOL);
+  if (name === key("README.md")) return readTemplate("README.md");
+  if (name === key("README.en.md")) return readTemplate("README.en.md");
   throw new Error(`未知生成条目: ${name}`);
 }
 
@@ -56,6 +115,18 @@ function walk(dir, out = []) {
 /** 打包进去的内容：Skill 本体 + 许可与归属 + 变更记录 + 包内说明书 */
 function collect() {
   const files = new Map();
+  if (VOL) {
+    files.set(FLAT ? "SKILL.md" : `${PREFIX}/SKILL.md`, null); // 由 volumeSkillMd 生成
+    for (const abs of walk(join(SKILL_DIR, VOL.dir))) {
+      const rel = relative(join(SKILL_DIR, VOL.dir), abs).split(sep).join("/");
+      if (FLAT && rel.endsWith(".tree.json")) continue;
+      files.set(`${PREFIX ? PREFIX + "/" : ""}${VOL.dir}/${rel}`, abs);
+    }
+    const script = join(SKILL_DIR, VOL.script);
+    files.set(`${PREFIX ? PREFIX + "/" : ""}${VOL.script}`, script);
+    for (const name of ["LICENSE", "NOTICE.md"]) files.set(FLAT ? name : `${PREFIX}/${name}`, join(ROOT, name));
+    return [...files.entries()].sort(([a], [b]) => (a < b ? -1 : 1));
+  }
   for (const abs of walk(SKILL_DIR)) {
     const rel = relative(SKILL_DIR, abs).split(sep).join("/");
     // 平铺包面向商品上传：只剔除同步缓存 .tree.json（平台校验文档里引用的文件必须存在，故保留 scripts/ 与 .source.json）
@@ -147,7 +218,7 @@ const entries = collect();
 if (FLAT) {
   const names = entries.map(([name]) => name);
   if (!names.includes("SKILL.md")) throw new Error("平铺包缺少根目录 SKILL.md");
-  const wrapped = names.find((name) => name.startsWith("workbuddy-playbook/"));
+  const wrapped = names.find((name) => name.startsWith("ai-work-assistant-playbook/"));
   if (wrapped) throw new Error(`平铺包出现了外层目录: ${wrapped}`);
 }
 
